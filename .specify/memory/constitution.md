@@ -2,37 +2,53 @@
 
 <!--
 Sync Impact Report:
-Version: 1.0.0 → 1.3.0 (MINOR: Added Development Standards + Clarified Priority Terminology)
+Version: 1.3.0 → 1.4.0 (MINOR: Comprehensive Phase II Expansion + Gradual Implementation Principle)
 
 Changes:
-- Added "Development Standards" section with 6 subsections
-- Enhanced Phase I with Definition of Done (MVP + Production-Ready)
-- Renamed "Task Priority Levels" to "Feature Requirements" to clarify implementation order vs user-facing task priority
-- Added clarification note distinguishing feature implementation priority from task priority field
-- Specified branch name for Phase I: 001-cli-todo-app
+- Massively expanded Phase II section with comprehensive technical specifications
+- Added new Principle VIII: Gradual Feature Implementation
+- Added Phase II-specific testing requirements to Development Standards
+- Added detailed authentication architecture for Phase II
+- Specified complete API endpoint contracts
+- Defined monorepo structure with .spec-kit/config.yaml requirements
+- Added Phase II Definition of Done (MVP + Production-Ready) matching Phase I detail level
+- Added Phase II Feature Implementation Hierarchy with 5 ordered stages
+- Specified deployment requirements (Vercel + demo video)
 
 New Sections Added:
-1. Testing Requirements (TDD, coverage, structure)
-2. Version Control & Branching (naming, commits)
-3. Environment Setup (venv, .env, dependencies)
-4. Approval Process (spec/plan/task approval workflow)
-5. Code Documentation (docstring standards)
-6. Logging Standards (library, format, levels)
+1. Principle VIII: Gradual Feature Implementation (emphasizes hierarchical feature building)
+2. Phase II: Complete technical specifications including:
+   - Gradual Implementation Strategy
+   - Technology Stack with versions
+   - API Endpoints (6 RESTful routes)
+   - Authentication & Security Architecture
+   - Monorepo Structure Requirements
+   - Data Models (Task, User)
+   - Definition of Done (MVP + Production-Ready)
+   - Feature Implementation Hierarchy (5 stages)
+   - Deliverables
 
 Modified Sections:
-- Phase I: Added MVP and Production-Ready Definition of Done
-- Phase I: Renamed "Task Priority Levels" to "Feature Requirements" with clarification note
-- Phase I: Added branch name specification
+- Development Standards: Added Phase II Coverage Requirements (75% MVP, 85% Production-Ready)
+- Phase II: Expanded from 13 lines to 180+ lines with production-grade specifications
 
 Templates Requiring Updates:
-✅ No template changes needed - all additions support existing workflows
+✅ spec-template.md - already supports priority-based user stories
+✅ plan-template.md - already supports web application structure (Option 2)
+✅ tasks-template.md - supports gradual implementation via priority ordering
+⚠️ Need to create .spec-kit/config.yaml for Phase II monorepo
 
 Rationale for MINOR version bump:
-- New Development Standards section adds material guidance
-- Non-breaking: all existing principles remain unchanged
-- Enables immediate Phase I execution with clear criteria
+- Significant Phase II material added (from outline to comprehensive spec)
+- New Principle VIII added for gradual implementation methodology
+- Non-breaking: Phase I remains unchanged, Phase II is additive
+- Enables Phase II execution with same rigor as Phase I
 
-Follow-up TODOs: None
+Follow-up TODOs:
+- Create .spec-kit/config.yaml when starting Phase II (specs_dir: specs, features_dir: specs/features)
+- Set up BETTER_AUTH_SECRET environment variable for Phase II authentication
+- Configure Neon PostgreSQL connection string in Phase II .env
+</thinking>
 -->
 
 ## Overview
@@ -130,25 +146,42 @@ Ensure user data isolation (e.g., via authentication in later phases), scalabili
 - MUST implement proper error handling without leaking sensitive information
 - Design MUST support horizontal scaling (stateless services in cloud phases)
 
+### VIII. Gradual Feature Implementation
+
+Features MUST be implemented in logical, hierarchical order. Each stage MUST be fully functional and testable before proceeding to the next. Build complexity incrementally—foundation before dependent features.
+
+**Rationale**: Gradual implementation reduces risk, enables early validation, and ensures a working application at every stage. This approach prevents big-bang integration failures and allows course correction after each milestone. It aligns with agile principles and provides judges with clear progression evidence.
+
+**Requirements**:
+- Features MUST be ordered by dependency (e.g., database setup before API, API before frontend)
+- Each feature stage MUST have independent acceptance criteria
+- MUST validate and test each stage before starting the next
+- Document the feature hierarchy in plan.md with explicit stage ordering
+- Each stage MUST be committable and deployable independently
+- Integration between stages MUST be testable in isolation
+
 ## Development Standards
 
 ### Testing Requirements
 - **TDD Mandatory**: Write tests BEFORE implementation for all features
 - **Phase I Coverage**: Minimum 70% for MVP, 80% for production-ready
+- **Phase II Coverage**: Minimum 75% for MVP, 85% for production-ready
 - **Test Structure**: Mirror src/ in tests/ (e.g., `src/models/task.py` → `tests/unit/models/test_task.py`)
-- **Test Categories**: Unit tests in `tests/unit/`, integration tests in `tests/integration/`
-- **Test Execution**: Run `pytest` before marking any task complete
+- **Test Categories**: Unit tests in `tests/unit/`, integration tests in `tests/integration/`, e2e tests in `tests/e2e/`
+- **Test Execution**: Run `pytest` (backend) and test framework (frontend) before marking any task complete
 
 ### Version Control & Branching
-- **Branch Naming**: `###-feature-name` format (e.g., `001-cli-todo-app`, `002-task-persistence`)
+- **Branch Naming**: `###-feature-name` format (e.g., `001-cli-todo-app`, `002-database-setup`)
 - **Feature Numbering**: Start at 001, increment sequentially per feature
 - **Commit Frequency**: Commit after each completed task from tasks.md
 - **Commit Format**: `feat(scope): description` for features, `fix(scope): description` for bugs
-- **Example**: `git checkout -b 001-cli-todo-app` then `git commit -m "feat(cli): add task creation menu"`
+- **Example**: `git checkout -b 002-database-setup` then `git commit -m "feat(db): configure neon postgresql connection"`
 
 ### Environment Setup
 - **Virtual Environment**: Use `uv venv` to create, `source .venv/bin/activate` to activate
-- **Environment Variables**: Create `.env` file with `LOG_LEVEL=DEBUG` and `APP_NAME=evolution-todo`
+- **Environment Variables**: Create `.env` files for each service (root, backend, frontend)
+- **Phase I Variables**: `LOG_LEVEL=DEBUG`, `APP_NAME=evolution-todo`
+- **Phase II Variables**: Add `DATABASE_URL`, `BETTER_AUTH_SECRET`, `JWT_SECRET`, `FRONTEND_URL`, `BACKEND_URL`
 - **Dependencies**: Manage via `uv add <package>` and `uv pip compile` for lock files
 
 ### Approval Process
@@ -230,16 +263,245 @@ Ensure user data isolation (e.g., via authentication in later phases), scalabili
 
 ### Phase II: Full-Stack Web Application
 
-**Scope**: Convert CLI to web app with REST API (backend) and React frontend. Add persistent storage (Neon PostgreSQL) and authentication (Better Auth + JWT).
+**Scope**: Transform the Phase I CLI application into a multi-user full-stack web application with persistent storage. Implement all Basic Level features (Add, Delete, Update, View, Mark Complete) as a web app supporting multiple users with authentication and database persistence. Features MUST be implemented gradually in hierarchical order per Principle VIII.
 
-**Technology**: FastAPI or Flask (backend), React + TailwindCSS (frontend), Neon PostgreSQL.
+**Gradual Implementation Strategy**: Build features in ordered stages, each independently functional and testable. Start with foundational infrastructure (database, models), then backend API, then authentication, then frontend, finally integration. Each stage MUST be validated before proceeding.
 
-**Structure**: Expand to `/backend/` and `/frontend/` directories.
+**Technology Stack**:
+- **Frontend**: Next.js 16+ (App Router), React 19+, TailwindCSS 3+
+- **Backend**: FastAPI 0.115+, Python 3.13+
+- **ORM**: SQLModel 0.0.22+
+- **Database**: Neon Serverless PostgreSQL (cloud-hosted)
+- **Authentication**: Better Auth (frontend), JWT validation (backend)
+- **Development Tools**: UV (Python dependencies), pnpm (Node dependencies)
+- **Deployment**: Vercel (frontend + backend as serverless functions)
+- **Spec-Driven**: Claude Code + Spec-Kit Plus
+
+**Monorepo Structure**:
+```text
+/
+├── .spec-kit/
+│   └── config.yaml          # Define specs_dir: specs, features_dir: specs/features
+├── specs/
+│   ├── overview.md          # High-level Phase II architecture
+│   ├── architecture.md      # System design and component interactions
+│   ├── features/
+│   │   ├── [002-database-setup]/
+│   │   ├── [003-task-crud-api]/
+│   │   ├── [004-authentication]/
+│   │   ├── [005-frontend-ui]/
+│   │   └── [006-integration]/
+│   ├── api/
+│   │   └── rest-endpoints.md     # API contracts and schemas
+│   ├── database/
+│   │   └── schema.md             # Database models and relationships
+│   └── ui/
+│       ├── components.md         # Frontend component specifications
+│       └── pages.md              # Page-level requirements
+├── backend/
+│   ├── src/
+│   │   ├── models/          # SQLModel database models
+│   │   ├── services/        # Business logic layer
+│   │   ├── api/             # FastAPI routes and endpoints
+│   │   ├── middleware/      # JWT validation, CORS, logging
+│   │   └── main.py          # FastAPI application entry
+│   ├── tests/
+│   │   ├── unit/
+│   │   ├── integration/
+│   │   └── e2e/
+│   ├── .env                 # Backend environment variables
+│   ├── pyproject.toml       # UV dependencies
+│   └── CLAUDE.md            # Backend development sessions
+├── frontend/
+│   ├── src/
+│   │   ├── app/             # Next.js App Router pages
+│   │   ├── components/      # React components (UI, forms, layouts)
+│   │   ├── services/        # API client, auth utilities
+│   │   └── lib/             # Shared utilities
+│   ├── tests/
+│   ├── .env.local           # Frontend environment variables
+│   ├── package.json         # pnpm dependencies
+│   └── CLAUDE.md            # Frontend development sessions
+├── CLAUDE.md                # Root project sessions
+├── docker-compose.yml       # Local development environment (optional)
+└── README.md                # Complete setup instructions
+```
+
+**API Endpoints** (RESTful):
+- `GET /api/{user_id}/tasks` - List all tasks for authenticated user
+- `POST /api/{user_id}/tasks` - Create new task with title and description
+- `GET /api/{user_id}/tasks/{id}` - Retrieve single task details by ID
+- `PUT /api/{user_id}/tasks/{id}` - Update task title, description, or status
+- `DELETE /api/{user_id}/tasks/{id}` - Delete task by ID
+- `PATCH /api/{user_id}/tasks/{id}/complete` - Toggle task completion status
+
+**Request/Response Format**:
+```json
+// POST /api/{user_id}/tasks
+{
+  "title": "Task title",
+  "description": "Task description"
+}
+
+// Response (201 Created)
+{
+  "id": 1,
+  "user_id": "user-uuid",
+  "title": "Task title",
+  "description": "Task description",
+  "complete": false,
+  "created_at": "2025-12-18T10:00:00Z",
+  "updated_at": "2025-12-18T10:00:00Z"
+}
+```
+
+**Authentication & Security Architecture**:
+- **Frontend (Better Auth)**:
+  - User signup/signin with email and password
+  - Better Auth issues JWT tokens on successful authentication
+  - Store JWT in secure HttpOnly cookies or localStorage
+  - Attach JWT in `Authorization: Bearer <token>` header for all API calls
+  - Implement protected routes (redirect to login if not authenticated)
+
+- **Backend (JWT Validation)**:
+  - Add middleware to verify JWT signature using shared secret
+  - Extract `user_id` from validated JWT payload
+  - Filter all database queries by authenticated `user_id`
+  - Return 401 Unauthorized for missing or invalid tokens
+  - Enforce task ownership (users can only access their own tasks)
+
+- **Shared Secret**: Set `BETTER_AUTH_SECRET` environment variable in both frontend and backend
+
+- **Security Requirements**:
+  - MUST validate JWT on every backend request
+  - MUST filter all data by authenticated user_id
+  - MUST use HTTPS in production (Vercel provides this)
+  - MUST NOT expose user data across accounts
+  - MUST implement rate limiting on authentication endpoints
+
+**Data Models**:
+
+**Task Model** (SQLModel):
+```python
+class Task(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    user_id: str = Field(index=True, nullable=False)
+    title: str = Field(max_length=200, nullable=False)
+    description: str | None = Field(default=None, max_length=1000)
+    complete: bool = Field(default=False)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+```
+
+**User Model** (Better Auth handles user storage, backend only needs user_id):
+- Backend does NOT store user credentials
+- Better Auth manages user table (email, hashed password, etc.)
+- Backend receives user_id from validated JWT
+- Backend Task model references user_id as foreign key concept
+
+**Definition of Done (MVP)**:
+- ✅ Database schema created in Neon PostgreSQL with Task model
+- ✅ All 6 API endpoints implemented and functional
+- ✅ Authentication: signup, signin, JWT validation working
+- ✅ Backend enforces user data isolation (tasks filtered by user_id)
+- ✅ Frontend: signup/signin pages, task list, add/edit/delete forms
+- ✅ Frontend: responsive design with TailwindCSS
+- ✅ Integration: frontend successfully calls backend API with JWT
+- ✅ 75%+ test coverage for backend (verified with `pytest --cov`)
+- ✅ All backend code PEP8 compliant (verified with `ruff check`)
+- ✅ All backend tests passing (`pytest` exits with 0)
+- ✅ Frontend builds successfully (`npm run build` succeeds)
+- ✅ Both services documented in respective CLAUDE.md files
+- ✅ README.md with complete setup instructions (database, env vars, running locally)
+- ✅ Deployed to Vercel and publicly accessible
+- ✅ Demo video (<90 seconds) showing: signup, signin, add task, view tasks, edit task, delete task, mark complete
+
+**Definition of Done (Production-Ready)**:
+- All MVP criteria PLUS:
+- ✅ 85%+ test coverage for backend
+- ✅ Frontend unit tests for components and services
+- ✅ E2E tests covering critical user journeys
+- ✅ Comprehensive error handling (network failures, validation errors, auth errors)
+- ✅ Input validation on both frontend and backend
+- ✅ Loading states and user feedback for all async operations
+- ✅ Proper CORS configuration for production domains
+- ✅ Database connection pooling and retry logic
+- ✅ Logging for all API requests and errors
+- ✅ Rate limiting on authentication endpoints
+- ✅ Security headers (CSP, HSTS, X-Frame-Options)
+- ✅ All functions have Google-style docstrings
+
+**Phase II Feature Implementation Hierarchy** (MUST follow this order):
+
+**Stage 1: Foundation - Database & Models** (Branch: `002-database-setup`)
+- Set up Neon PostgreSQL database
+- Configure DATABASE_URL environment variable
+- Implement SQLModel Task model
+- Create database migration scripts
+- Write unit tests for model validation
+- **Acceptance**: Can create/read Task records programmatically
+
+**Stage 2: Backend API - CRUD Operations** (Branch: `003-task-crud-api`)
+- Implement FastAPI application structure
+- Create all 6 API endpoints (GET, POST, PUT, DELETE, PATCH)
+- Add request/response validation with Pydantic
+- Implement service layer for business logic
+- Write integration tests for all endpoints
+- **Acceptance**: API endpoints work with curl/Postman (no auth yet)
+
+**Stage 3: Authentication & Security** (Branch: `004-authentication`)
+- Set up Better Auth on frontend for user management
+- Implement JWT validation middleware in backend
+- Add user_id filtering to all database queries
+- Configure BETTER_AUTH_SECRET in both services
+- Implement protected API routes
+- Write tests for authentication flow
+- **Acceptance**: Only authenticated users can access their tasks
+
+**Stage 4: Frontend UI** (Branch: `005-frontend-ui`)
+- Set up Next.js 16 with App Router
+- Create signup/signin pages with Better Auth integration
+- Implement task list page with CRUD forms
+- Add TailwindCSS styling and responsive design
+- Implement API client service with JWT header injection
+- Add loading states and error handling
+- **Acceptance**: Full UI works with mock API data
+
+**Stage 5: Integration & Deployment** (Branch: `006-integration`)
+- Connect frontend to backend API
+- Configure CORS for Vercel deployment
+- Set up environment variables in Vercel
+- Deploy both services to Vercel
+- Run E2E tests against deployed application
+- Record demo video showing all features
+- **Acceptance**: Deployed app fully functional, demo video complete
+
+**Branch Sequence**: `002-database-setup` → `003-task-crud-api` → `004-authentication` → `005-frontend-ui` → `006-integration`
+
+**Deliverables**:
+- GitHub repository with complete Phase II implementation
+- Constitution file (this document) at `.specify/memory/constitution.md`
+- Specs in `/specs/` with history tracking for each feature
+- Source code split into `/backend/` and `/frontend/` directories
+- CLAUDE.md files in root, backend, and frontend (all sessions documented)
+- README.md with comprehensive setup instructions
+- Deployed application on Vercel (provide URL)
+- Demo video (<90 seconds) demonstrating:
+  1. User signup and signin
+  2. Adding a new task
+  3. Viewing task list
+  4. Editing a task
+  5. Deleting a task
+  6. Marking task as complete
+  7. Data isolation (create second user, verify separate task lists)
 
 **Constitution Compliance**:
-- Maintain SDD workflow with separate specs for frontend and backend features
-- Implement authentication per Principle VII (user data isolation)
-- Document API contracts in `/specs/[feature]/contracts/`
+- MUST maintain SDD workflow with separate specs for each feature stage
+- MUST follow gradual implementation per Principle VIII
+- MUST implement authentication per Principle VII (user data isolation)
+- MUST document API contracts in `/specs/api/rest-endpoints.md`
+- MUST use monorepo structure per Principle IV
+- MUST achieve Definition of Done before claiming Phase II complete
 
 ### Phase III: AI-Powered Chatbot
 
@@ -286,4 +548,4 @@ All pull requests and reviews MUST verify compliance with this constitution. Com
 
 Use `CLAUDE.md` for runtime development guidance and session tracking.
 
-**Version**: 1.3.0 | **Ratified**: 2025-12-17 | **Last Amended**: 2025-12-17
+**Version**: 1.4.0 | **Ratified**: 2025-12-17 | **Last Amended**: 2025-12-18
