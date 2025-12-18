@@ -7,7 +7,7 @@ read, update, delete operations, and task state management.
 import logging
 import os
 
-from models.task import create_task_dict, validate_priority, validate_title
+from src.models.task import create_task_dict, validate_priority, validate_title
 
 # Configure logging per constitution requirements
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")

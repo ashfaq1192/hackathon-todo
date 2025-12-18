@@ -4,15 +4,15 @@ This module contains the main application loop that integrates all
 CLI and service layer functions to provide a complete todo management system.
 """
 
-from cli.display import display_error_message, display_success_message, display_task_list
-from cli.menu import (
+from src.cli.display import display_error_message, display_success_message, display_task_list
+from src.cli.menu import (
     display_main_menu,
     get_menu_choice,
     prompt_add_task,
     prompt_task_id,
     prompt_update_task,
 )
-from services.task_service import (
+from src.services.task_service import (
     create_task,
     delete_task,
     get_all_tasks,
