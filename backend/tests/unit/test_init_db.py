@@ -5,17 +5,11 @@ This module tests that the `init_db` function correctly creates
 database tables based on the defined SQLModel models.
 """
 
-from sqlalchemy import inspect
-
 import pytest
-
-from sqlmodel import SQLModel, create_engine
-
-
+from sqlalchemy import inspect
+from sqlmodel import create_engine
 
 from src.database import init_db
-
-from src.models.task import Task
 
 
 @pytest.fixture(scope="function")
@@ -43,14 +37,15 @@ def test_init_db_creates_tables(clean_engine):
     inspector = inspect(clean_engine)
     assert inspector.has_table("tasks"), "Post-condition failed: 'tasks' table was not created."
 
+
 def test_tasks_table_has_required_columns(clean_engine):
     """
     T036: Verify that the 'tasks' table has all the required columns.
     """
     init_db(clean_engine)
     inspector = inspect(clean_engine)
-    columns = [col['name'] for col in inspector.get_columns('tasks')]
-    
+    columns = [col["name"] for col in inspector.get_columns("tasks")]
+
     expected_columns = [
         "id",
         "user_id",
@@ -60,7 +55,7 @@ def test_tasks_table_has_required_columns(clean_engine):
         "created_at",
         "updated_at",
     ]
-    
+
     assert all(col in columns for col in expected_columns)
     assert len(columns) == len(expected_columns)
 
@@ -71,6 +66,6 @@ def test_user_id_index_exists(clean_engine):
     """
     init_db(clean_engine)
     inspector = inspect(clean_engine)
-    indexes = inspector.get_indexes('tasks')
-    
-    assert any(idx['name'] == 'ix_tasks_user_id' for idx in indexes)
+    indexes = inspector.get_indexes("tasks")
+
+    assert any(idx["name"] == "ix_tasks_user_id" for idx in indexes)

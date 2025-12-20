@@ -6,6 +6,7 @@ from SQLModel metadata.
 """
 
 import logging
+
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import SQLModel
 
@@ -20,7 +21,7 @@ def init_db(engine):
 
     Args:
         engine: The SQLAlchemy engine to use.
-    
+
     Raises:
         SQLAlchemyError: If an error occurs during table creation.
     """
@@ -31,4 +32,3 @@ def init_db(engine):
     except SQLAlchemyError as e:
         logger.error(f"Error creating database tables: {e}")
         raise
-

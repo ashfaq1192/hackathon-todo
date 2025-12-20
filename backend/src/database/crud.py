@@ -2,13 +2,16 @@
 CRUD (Create, Read, Update, Delete) operations for the Task model.
 """
 
-from sqlmodel import Session, select
-from sqlalchemy.exc import SQLAlchemyError
 import logging
+
+from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import Session, select
+
 from src.models.task import Task
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 def create_task(session: Session, user_id: str, title: str, description: str | None = None) -> Task:
     """
@@ -22,7 +25,7 @@ def create_task(session: Session, user_id: str, title: str, description: str | N
 
     Returns:
         The created task object.
-    
+
     Raises:
         SQLAlchemyError: If a database error occurs.
     """
@@ -38,6 +41,7 @@ def create_task(session: Session, user_id: str, title: str, description: str | N
         session.rollback()
         raise
 
+
 def get_task_by_id(session: Session, task_id: int) -> Task | None:
     """
     Retrieve a single task by its ID.
@@ -48,7 +52,7 @@ def get_task_by_id(session: Session, task_id: int) -> Task | None:
 
     Returns:
         The task object if found, otherwise None.
-        
+
     Raises:
         SQLAlchemyError: If a database error occurs.
     """
@@ -58,6 +62,7 @@ def get_task_by_id(session: Session, task_id: int) -> Task | None:
     except SQLAlchemyError as e:
         logger.error(f"Error retrieving task {task_id}: {e}")
         raise
+
 
 def get_tasks_by_user(session: Session, user_id: str) -> list[Task]:
     """
@@ -69,7 +74,7 @@ def get_tasks_by_user(session: Session, user_id: str) -> list[Task]:
 
     Returns:
         A list of task objects.
-        
+
     Raises:
         SQLAlchemyError: If a database error occurs.
     """

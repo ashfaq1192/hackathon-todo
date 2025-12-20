@@ -7,6 +7,7 @@ that it's present before the application starts.
 
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Define the path to the .env file (one directory up from this file)
