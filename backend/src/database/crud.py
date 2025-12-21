@@ -85,3 +85,79 @@ def get_tasks_by_user(session: Session, user_id: str) -> list[Task]:
     except SQLAlchemyError as e:
         logger.error(f"Error retrieving tasks for user {user_id}: {e}")
         raise
+
+
+def update_task(session: Session, task_id: int, updates: dict) -> Task | None:
+    """
+    Update a task with the provided field updates.
+
+    Args:
+        session: The database session.
+        task_id: The ID of the task to update.
+        updates: Dictionary of field names and values to update.
+
+    Returns:
+        The updated task object if found, otherwise None.
+
+    Raises:
+        SQLAlchemyError: If a database error occurs.
+
+    Example:
+        update_task(session, 1, {"title": "New Title", "complete": True})
+    """
+    try:
+        task = session.get(Task, task_id)
+        if task is None:
+            logger.warning(f"Task {task_id} not found for update.")
+            return None
+
+        # Update only the provided fields
+        for field, value in updates.items():
+            if hasattr(task, field):
+                setattr(task, field, value)
+            else:
+                logger.warning(f"Ignoring unknown field '{field}' in update for task {task_id}")
+
+        session.add(task)
+        session.commit()
+        session.refresh(task)
+        logger.info(f"Task {task_id} updated successfully.")
+        return task
+    except SQLAlchemyError as e:
+        logger.error(f"Error updating task {task_id}: {e}")
+        session.rollback()
+        raise
+
+
+def delete_task(session: Session, task_id: int) -> bool:
+    """
+    Delete a task by its ID.
+
+    Args:
+        session: The database session.
+        task_id: The ID of the task to delete.
+
+    Returns:
+        True if the task was deleted, False if the task was not found.
+
+    Raises:
+        SQLAlchemyError: If a database error occurs.
+
+    Example:
+        if delete_task(session, 1):
+            print("Task deleted successfully")
+    """
+    try:
+        task = session.get(Task, task_id)
+        if task is None:
+            logger.warning(f"Task {task_id} not found for deletion.")
+            return False
+
+        session.delete(task)
+        session.commit()
+        logger.info(f"Task {task_id} deleted successfully.")
+        return True
+    except SQLAlchemyError as e:
+        logger.error(f"Error deleting task {task_id}: {e}")
+        session.rollback()
+        raise

@@ -35,7 +35,10 @@ def get_engine():
         # Check if we are running tests and a test engine is provided
         if os.environ.get("PYTEST_IN_PROGRESS") == "1" and "test_database_url" in os.environ:
             logger.info("Using test database engine.")
-            _engine = create_engine(os.environ["test_database_url"])
+            _engine = create_engine(
+                os.environ["test_database_url"],
+                connect_args={"check_same_thread": False, "uri": True},  # Allow SQLite across threads with URI mode
+            )
         else:
             logger.info("Creating production database engine.")
             _engine = create_engine(
