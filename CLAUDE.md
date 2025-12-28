@@ -214,6 +214,21 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 - In-memory list data structure (data lost on exit) (001-cli-todo-app)
 - Python 3.13+ + SQLModel 0.0.22+, psycopg2-binary (PostgreSQL adapter), python-dotenv (environment config) (002-database-setup)
 - Neon Serverless PostgreSQL (cloud-hosted, SSL/TLS encrypted) (002-database-setup)
+- TypeScript 5+ + Next.js 16+ (App Router), React 19+, Better Auth (authentication), Tailwind CSS 4+ (004-frontend-nextjs)
+- React Hook Form + Zod (form validation), Axios (HTTP client), Vitest + Playwright (testing) (004-frontend-nextjs)
+- Vercel deployment platform (HTTPS, CDN, environment variables) (004-frontend-nextjs)
 
 ## Recent Changes
 - 001-cli-todo-app: Added Python 3.13+ + None (stdlib only for MVP), pytest (testing), ruff (linting)
+- 004-frontend-nextjs: Added Next.js 16+ App Router, Better Auth, Tailwind CSS 4+, TypeScript 5+, Vercel deployment
+- 004-frontend-nextjs (Phase 11 Polish - 2025-12-27):
+  - Completed all polish and cross-cutting concerns
+  - Verified TypeScript strict mode (zero errors)
+  - Added ESLint configuration (eslint.config.mjs for ESLint 9)
+  - Enhanced accessibility attributes (ARIA labels, aria-describedby, aria-live="polite" for character counters)
+  - Confirmed all UX features: logout, 401 handler, loading skeletons, toast notifications
+  - Production build successful (Next.js 16.1.1 with Turbopack)
+  - Created comprehensive README.md with setup instructions, features, API docs
+  - Enhanced .env.example with detailed documentation and setup guide
+  - Test suite: 14 passing unit tests (SignupForm, LoginForm, TaskItem coverage)
+  - Status: Frontend ready for Phase 12 (Deployment to Vercel)
