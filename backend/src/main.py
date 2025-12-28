@@ -79,14 +79,13 @@ app = FastAPI(
 )
 
 # Configure CORS middleware to allow frontend requests
+import os
+
+cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",  # Next.js dev server
-        "http://127.0.0.1:3000",  # Alternative localhost
-        "http://localhost:3001",  # Next.js on port 3001
-        "http://127.0.0.1:3001",  # Alternative localhost 3001
-    ],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, PATCH, DELETE, OPTIONS)
     allow_headers=["*"],  # Allow all headers
