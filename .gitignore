@@ -67,3 +67,26 @@ logs/
 *.bak
 *.swp
 .cache/
+
+# Node.js / Frontend
+node_modules/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+.pnpm-store/
+.vercel/
+.turbo/
+
+# Testing (Frontend)
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# Environment (Frontend)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
