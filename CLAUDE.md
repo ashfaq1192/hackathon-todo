@@ -212,6 +212,8 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 ## Active Technologies
 - Python 3.13+ + None (stdlib only for MVP), pytest (testing), ruff (linting) (001-cli-todo-app)
 - In-memory list data structure (data lost on exit) (001-cli-todo-app)
+- Python 3.13+ + SQLModel 0.0.22+, psycopg2-binary (PostgreSQL adapter), python-dotenv (environment config) (002-database-setup)
+- Neon Serverless PostgreSQL (cloud-hosted, SSL/TLS encrypted) (002-database-setup)
 
 ## Recent Changes
 - 001-cli-todo-app: Added Python 3.13+ + None (stdlib only for MVP), pytest (testing), ruff (linting)
