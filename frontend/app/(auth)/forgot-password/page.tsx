@@ -129,7 +129,7 @@ export default function ForgotPasswordPage() {
                 type="submit"
                 variant="primary"
                 size="lg"
-                fullWidth
+                className="w-full"
                 disabled={isLoading}
               >
                 {isLoading ? 'Sending...' : 'Send Reset Link'}
