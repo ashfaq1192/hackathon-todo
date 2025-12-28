@@ -90,3 +90,19 @@ test-results/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Debugging and temporary files (root only)
+/test_*.py
+/test_*.html
+/test_*.sh
+/test_*.md
+/*_INSTRUCTIONS.md
+/*_IMPROVEMENTS.md
+/*_SETUP.md
+/*_TESTING.md
+/*_FIX.md
+/BUGS_FIXED.md
+/GEMINI.md
+/Capture.PNG
+/next
+/hackathon-todo-frontend@*
