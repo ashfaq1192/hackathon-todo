@@ -165,7 +165,7 @@ export default function ResetPasswordPage() {
                 type="submit"
                 variant="primary"
                 size="lg"
-                fullWidth
+                className="w-full"
                 disabled={isLoading}
               >
                 {isLoading ? 'Resetting...' : 'Reset Password'}
