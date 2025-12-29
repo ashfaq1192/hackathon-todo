@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Task } from '@/types/task';
+import { Task, TaskPriority } from '@/types/task';
 import { apiClient, getUserId } from '@/lib/api/client';
 import { updateTaskSchema, UpdateTaskInput } from '@/lib/validation/schemas';
 import { Button } from '@/components/ui/Button';
@@ -31,6 +31,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onTaskUpdated, onTaskD
       title: task.title,
       description: task.description || '',
       complete: task.complete,
+      priority: task.priority,
     },
   });
 
@@ -71,6 +72,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onTaskUpdated, onTaskD
       title: task.title,
       description: task.description || '',
       complete: isComplete,
+      priority: task.priority,
     });
   };
 
@@ -92,6 +94,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onTaskUpdated, onTaskD
         title: data.title,
         description: data.description || null,
         complete: data.complete,
+        priority: data.priority,
       });
 
       toast.success('Task updated successfully!');
@@ -187,6 +190,30 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onTaskUpdated, onTaskD
             )}
           </div>
 
+          <div className="mb-3">
+            <label htmlFor={`edit-priority-${task.id}`} className="block text-sm font-medium text-gray-700 mb-1">
+              Priority <span className="text-red-500">*</span>
+            </label>
+            <select
+              {...register('priority')}
+              id={`edit-priority-${task.id}`}
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
+                errors.priority ? 'border-red-500' : 'border-gray-300'
+              }`}
+              aria-invalid={errors.priority ? 'true' : 'false'}
+              aria-describedby={errors.priority ? `edit-priority-error-${task.id}` : undefined}
+            >
+              <option value="low">🟢 Low Priority</option>
+              <option value="medium">🟡 Medium Priority</option>
+              <option value="high">🔴 High Priority</option>
+            </select>
+            {errors.priority && (
+              <p id={`edit-priority-error-${task.id}`} className="text-xs text-red-500 mt-1" role="alert">
+                {errors.priority.message}
+              </p>
+            )}
+          </div>
+
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={isSaving} loading={isSaving}>
               {isSaving ? 'Saving...' : 'Save'}
@@ -220,11 +247,29 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onTaskUpdated, onTaskD
     );
   }
 
+  // Helper function to get priority badge styles
+  const getPriorityBadge = (priority: TaskPriority) => {
+    const styles = {
+      low: { bg: 'bg-green-100', text: 'text-green-800', icon: '🟢', label: 'Low' },
+      medium: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: '🟡', label: 'Medium' },
+      high: { bg: 'bg-red-100', text: 'text-red-800', icon: '🔴', label: 'High' }
+    };
+    return styles[priority] || styles.medium;
+  };
+
+  const priorityBadge = getPriorityBadge(task.priority);
+
   // Render normal view mode
   return (
     <div className={`p-4 border rounded-md shadow-sm transition-colors ${isComplete ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'} task-item ${isComplete ? 'task-complete' : ''}`}>
       <div className="flex items-start justify-between mb-2">
         <div className="flex-grow">
+          <div className="flex items-center gap-2 mb-2">
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${priorityBadge.bg} ${priorityBadge.text}`}>
+              <span className="mr-1">{priorityBadge.icon}</span>
+              {priorityBadge.label}
+            </span>
+          </div>
           <h3 className={`text-lg font-medium ${isComplete ? 'line-through text-gray-500' : 'text-gray-900'}`}>
             {task.title}
           </h3>

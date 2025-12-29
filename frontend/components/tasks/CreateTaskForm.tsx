@@ -85,6 +85,23 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ onTaskCreated })
         )}
       </div>
 
+      <div className="mb-4">
+        <label htmlFor="priority" className="block text-sm font-medium text-gray-700">Priority</label>
+        <select
+          {...register('priority')}
+          id="priority"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+          aria-invalid={errors.priority ? 'true' : 'false'}
+        >
+          <option value="low">🟢 Low Priority</option>
+          <option value="medium">🟡 Medium Priority</option>
+          <option value="high">🔴 High Priority</option>
+        </select>
+        {errors.priority && (
+          <p className="mt-1 text-sm text-red-600" role="alert">{errors.priority.message}</p>
+        )}
+      </div>
+
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Adding Task...' : 'Add Task'}
       </Button>

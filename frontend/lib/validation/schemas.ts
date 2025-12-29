@@ -86,6 +86,7 @@ export const createTaskSchema = z.object({
     .trim()
     .optional()
     .or(z.literal('')),  // Allow empty string
+  priority: z.enum(['low', 'medium', 'high']).optional(),
 });
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
@@ -101,6 +102,7 @@ export const updateTaskSchema = z.object({
     .trim()
     .nullable(),
   complete: z.boolean(),
+  priority: z.enum(['low', 'medium', 'high']),
 });
 
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
@@ -118,6 +120,7 @@ export const patchTaskSchema = z.object({
     .nullable()
     .optional(),
   complete: z.boolean().optional(),
+  priority: z.enum(['low', 'medium', 'high']).optional(),
 }).refine(data => Object.keys(data).length > 0, {
   message: 'At least one field must be provided',
 });
