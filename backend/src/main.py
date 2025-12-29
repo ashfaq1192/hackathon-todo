@@ -133,6 +133,50 @@ async def health_check():
     }
 
 
+# Diagnostic Endpoint - Check database enum state
+@app.get("/diagnostic/enum-check", tags=["Diagnostic"])
+async def check_enum_state():
+    """
+    Check the current state of the priority enum in the database.
+    TEMPORARY: Remove after debugging.
+    """
+    try:
+        from sqlalchemy import text
+        from src.database import get_engine
+
+        engine = get_engine()
+
+        with engine.connect() as conn:
+            # Check ENUM values
+            result = conn.execute(text("""
+                SELECT e.enumlabel
+                FROM pg_type t
+                JOIN pg_enum e ON t.oid = e.enumtypid
+                WHERE t.typname = 'taskpriority'
+                ORDER BY e.enumsortorder;
+            """))
+            enum_values = [row[0] for row in result.fetchall()]
+
+            # Check sample task priorities
+            sample_result = conn.execute(text("""
+                SELECT id, priority
+                FROM tasks
+                LIMIT 10;
+            """))
+            sample_tasks = [{"id": row[0], "priority": row[1]} for row in sample_result.fetchall()]
+
+        return {
+            "enum_values": enum_values,
+            "sample_tasks": sample_tasks,
+            "status": "ok"
+        }
+    except Exception as e:
+        return {
+            "error": str(e),
+            "status": "error"
+        }
+
+
 # Root Endpoint
 @app.get("/", tags=["Root"])
 async def root():
