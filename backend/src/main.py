@@ -157,6 +157,78 @@ async def root():
     }
 
 
+# Temporary Migration Endpoint (DELETE AFTER USE)
+@app.post("/migrate/fix-priority-enum", tags=["Migration"])
+async def run_priority_enum_migration():
+    """
+    TEMPORARY: Run priority enum case fix migration.
+
+    This endpoint will be removed after the migration is complete.
+    DELETE THIS ENDPOINT after successful migration!
+    """
+    try:
+        from sqlalchemy import text
+        from src.database import get_engine
+
+        engine = get_engine()
+        results = []
+
+        with engine.connect() as conn:
+            # Step 1: Convert to VARCHAR
+            conn.execute(text("ALTER TABLE tasks ALTER COLUMN priority TYPE VARCHAR(10);"))
+            conn.commit()
+            results.append("✓ Converted to VARCHAR")
+
+            # Step 2: Update values to lowercase
+            result = conn.execute(text("""
+                UPDATE tasks SET priority = LOWER(priority)
+                WHERE priority IN ('LOW', 'MEDIUM', 'HIGH');
+            """))
+            conn.commit()
+            results.append(f"✓ Updated {result.rowcount} rows to lowercase")
+
+            # Step 3: Drop old ENUM
+            conn.execute(text("DROP TYPE IF EXISTS taskpriority CASCADE;"))
+            conn.commit()
+            results.append("✓ Dropped old ENUM type")
+
+            # Step 4: Create new ENUM
+            conn.execute(text("CREATE TYPE taskpriority AS ENUM ('low', 'medium', 'high');"))
+            conn.commit()
+            results.append("✓ Created new ENUM type")
+
+            # Step 5: Drop default
+            conn.execute(text("ALTER TABLE tasks ALTER COLUMN priority DROP DEFAULT;"))
+            conn.commit()
+            results.append("✓ Dropped default constraint")
+
+            # Step 6: Convert back to ENUM
+            conn.execute(text("""
+                ALTER TABLE tasks ALTER COLUMN priority TYPE taskpriority
+                USING priority::taskpriority;
+            """))
+            conn.commit()
+            results.append("✓ Converted back to ENUM")
+
+            # Step 7: Restore default
+            conn.execute(text("ALTER TABLE tasks ALTER COLUMN priority SET DEFAULT 'medium'::taskpriority;"))
+            conn.commit()
+            results.append("✓ Restored default value")
+
+        return {
+            "status": "success",
+            "message": "Migration completed successfully!",
+            "steps": results
+        }
+
+    except Exception as e:
+        logger.error(f"Migration failed: {e}")
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+
 # Register API Routes (T054)
 from src.api.routes.tasks import router as tasks_router
 
