@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import { TodoItem } from './TodoItem';
-import type { Task, TaskPatch } from '@/types/task';
+import type { Task, TaskPatch, TaskPriority } from '@/types/task';
 
 interface TodoListProps {
   todos: Task[];
@@ -18,9 +18,11 @@ interface TodoListProps {
 }
 
 type FilterType = 'all' | 'active' | 'completed';
+type PriorityFilterType = 'all' | 'low' | 'medium' | 'high';
 
 export function TodoList({ todos, onUpdate, onDelete, isLoading = false }: TodoListProps) {
   const [filter, setFilter] = useState<FilterType>('all');
+  const [priorityFilter, setPriorityFilter] = useState<PriorityFilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Calculate task numbers for search
@@ -28,11 +30,14 @@ export function TodoList({ todos, onUpdate, onDelete, isLoading = false }: TodoL
     new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
 
-  // Filter todos based on selected filter and search query
+  // Filter todos based on selected filter, priority filter, and search query
   const filteredTodos = todos.filter((todo) => {
     // Filter by status
     if (filter === 'active' && todo.complete) return false;
     if (filter === 'completed' && !todo.complete) return false;
+
+    // Filter by priority
+    if (priorityFilter !== 'all' && todo.priority !== priorityFilter) return false;
 
     // Filter by search query
     if (searchQuery.trim()) {
@@ -54,6 +59,9 @@ export function TodoList({ todos, onUpdate, onDelete, isLoading = false }: TodoL
   const totalCount = todos.length;
   const activeCount = todos.filter((t) => !t.complete).length;
   const completedCount = todos.filter((t) => t.complete).length;
+  const lowCount = todos.filter((t) => t.priority === 'low').length;
+  const mediumCount = todos.filter((t) => t.priority === 'medium').length;
+  const highCount = todos.filter((t) => t.priority === 'high').length;
 
   return (
     <div className="space-y-5">
@@ -84,53 +92,118 @@ export function TodoList({ todos, onUpdate, onDelete, isLoading = false }: TodoL
       </div>
 
       {/* Filter Tabs and Stats */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="inline-flex bg-gray-100 rounded-lg p-1 space-x-1">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
-              filter === 'all'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            All
-            <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
-              filter === 'all' ? 'bg-white/20' : 'bg-gray-300'
-            }`}>
-              {totalCount}
-            </span>
-          </button>
-          <button
-            onClick={() => setFilter('active')}
-            className={`px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
-              filter === 'active'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            Active
-            <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
-              filter === 'active' ? 'bg-white/20' : 'bg-gray-300'
-            }`}>
-              {activeCount}
-            </span>
-          </button>
-          <button
-            onClick={() => setFilter('completed')}
-            className={`px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
-              filter === 'completed'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            Completed
-            <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
-              filter === 'completed' ? 'bg-white/20' : 'bg-gray-300'
-            }`}>
-              {completedCount}
-            </span>
-          </button>
+      <div className="space-y-3">
+        {/* Status Filters */}
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="inline-flex bg-gray-100 rounded-lg p-1 space-x-1">
+            <button
+              onClick={() => setFilter('all')}
+              className={`px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
+                filter === 'all'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              All
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                filter === 'all' ? 'bg-white/20' : 'bg-gray-300'
+              }`}>
+                {totalCount}
+              </span>
+            </button>
+            <button
+              onClick={() => setFilter('active')}
+              className={`px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
+                filter === 'active'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Active
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                filter === 'active' ? 'bg-white/20' : 'bg-gray-300'
+              }`}>
+                {activeCount}
+              </span>
+            </button>
+            <button
+              onClick={() => setFilter('completed')}
+              className={`px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
+                filter === 'completed'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Completed
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                filter === 'completed' ? 'bg-white/20' : 'bg-gray-300'
+              }`}>
+                {completedCount}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Priority Filters */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm font-medium text-gray-700">Priority:</span>
+          <div className="inline-flex bg-gray-100 rounded-lg p-1 space-x-1">
+            <button
+              onClick={() => setPriorityFilter('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                priorityFilter === 'all'
+                  ? 'bg-gray-600 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setPriorityFilter('low')}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                priorityFilter === 'low'
+                  ? 'bg-green-600 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              🟢 Low
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                priorityFilter === 'low' ? 'bg-white/20' : 'bg-gray-300'
+              }`}>
+                {lowCount}
+              </span>
+            </button>
+            <button
+              onClick={() => setPriorityFilter('medium')}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                priorityFilter === 'medium'
+                  ? 'bg-yellow-600 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              🟡 Medium
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                priorityFilter === 'medium' ? 'bg-white/20' : 'bg-gray-300'
+              }`}>
+                {mediumCount}
+              </span>
+            </button>
+            <button
+              onClick={() => setPriorityFilter('high')}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                priorityFilter === 'high'
+                  ? 'bg-red-600 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              🔴 High
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                priorityFilter === 'high' ? 'bg-white/20' : 'bg-gray-300'
+              }`}>
+                {highCount}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 

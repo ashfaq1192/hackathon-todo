@@ -6,9 +6,24 @@ defaults, and timestamp management for the Neon PostgreSQL database.
 """
 
 from datetime import UTC, datetime
+from enum import Enum
 
 from pydantic import ConfigDict
 from sqlmodel import Field, SQLModel
+
+
+class TaskPriority(str, Enum):
+    """
+    Priority levels for tasks.
+
+    Values:
+        LOW: Low priority task
+        MEDIUM: Medium priority task (default)
+        HIGH: High priority task
+    """
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
 
 
 class Task(SQLModel, table=True):
@@ -21,6 +36,7 @@ class Task(SQLModel, table=True):
         title: Task title (required, max 200 chars)
         description: Optional detailed description (max 1000 chars)
         complete: Completion status (defaults to False)
+        priority: Task priority (low/medium/high, defaults to medium)
         created_at: Creation timestamp (auto-generated UTC)
         updated_at: Last modification timestamp (auto-updated UTC)
     """
@@ -40,6 +56,9 @@ class Task(SQLModel, table=True):
     # Completion status - defaults to False for new tasks
     complete: bool = Field(default=False)
 
+    # Priority level - defaults to medium for new tasks
+    priority: TaskPriority = Field(default=TaskPriority.MEDIUM)
+
     # Timestamps - auto-generated and auto-updated
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(
@@ -54,6 +73,7 @@ class Task(SQLModel, table=True):
                 "title": "Complete Phase II Stage 1",
                 "description": "Set up database with Neon and SQLModel",
                 "complete": False,
+                "priority": "medium",
             }
         }
     )

@@ -13,12 +13,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import type { TaskCreate } from '@/types/task';
+import type { TaskCreate, TaskPriority } from '@/types/task';
 
 // Validation schema
 const todoSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title must be 200 characters or less'),
   description: z.string().max(1000, 'Description must be 1000 characters or less').optional(),
+  priority: z.enum(['low', 'medium', 'high']).optional(),
 });
 
 interface AddTodoFormProps {
@@ -101,6 +102,33 @@ export function AddTodoForm({ onSubmit, isLoading = false }: AddTodoFormProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             {errors.description.message}
+          </p>
+        )}
+      </div>
+
+      {/* Priority Field */}
+      <div>
+        <label htmlFor="priority" className="block text-sm font-semibold text-gray-700 mb-2">
+          Priority
+        </label>
+        <select
+          id="priority"
+          {...register('priority')}
+          disabled={isLoading}
+          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+            errors.priority ? 'border-red-500 bg-red-50' : 'border-gray-300'
+          } ${isLoading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+        >
+          <option value="low">🟢 Low Priority</option>
+          <option value="medium" selected>🟡 Medium Priority</option>
+          <option value="high">🔴 High Priority</option>
+        </select>
+        {errors.priority && (
+          <p className="mt-2 text-sm text-red-600 flex items-start">
+            <svg className="w-4 h-4 mr-1 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {errors.priority.message}
           </p>
         )}
       </div>

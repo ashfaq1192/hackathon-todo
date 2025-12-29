@@ -9,6 +9,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from src.models.task import TaskPriority
+
 
 class TaskCreate(BaseModel):
     """
@@ -17,16 +19,19 @@ class TaskCreate(BaseModel):
     Attributes:
         title: Task title (required, 1-200 chars)
         description: Optional task description (max 1000 chars)
+        priority: Task priority (low/medium/high, defaults to medium)
 
     Example:
         {
             "title": "Complete Phase II Stage 2",
-            "description": "Implement FastAPI REST API"
+            "description": "Implement FastAPI REST API",
+            "priority": "medium"
         }
     """
 
     title: str = Field(..., min_length=1, max_length=200, description="Task title")
     description: str | None = Field(None, max_length=1000, description="Task description")
+    priority: TaskPriority = Field(default=TaskPriority.MEDIUM, description="Task priority level")
 
 
 class TaskUpdate(BaseModel):
@@ -39,18 +44,21 @@ class TaskUpdate(BaseModel):
         title: Task title (required, 1-200 chars)
         description: Optional task description (max 1000 chars)
         complete: Task completion status
+        priority: Task priority level
 
     Example:
         {
             "title": "Updated Task Title",
             "description": "Updated description",
-            "complete": true
+            "complete": true,
+            "priority": "high"
         }
     """
 
     title: str = Field(..., min_length=1, max_length=200, description="Task title")
     description: str | None = Field(None, max_length=1000, description="Task description")
     complete: bool = Field(..., description="Task completion status")
+    priority: TaskPriority = Field(..., description="Task priority level")
 
 
 class TaskPatch(BaseModel):
@@ -63,16 +71,19 @@ class TaskPatch(BaseModel):
         title: Task title (optional, 1-200 chars if provided)
         description: Task description (optional, max 1000 chars if provided)
         complete: Task completion status (optional)
+        priority: Task priority level (optional)
 
     Example:
         {
-            "complete": true
+            "complete": true,
+            "priority": "high"
         }
     """
 
     title: str | None = Field(None, min_length=1, max_length=200, description="Task title")
     description: str | None = Field(None, max_length=1000, description="Task description")
     complete: bool | None = Field(None, description="Task completion status")
+    priority: TaskPriority | None = Field(None, description="Task priority level")
 
 
 class TaskResponse(BaseModel):
@@ -87,6 +98,7 @@ class TaskResponse(BaseModel):
         title: Task title
         description: Task description (nullable)
         complete: Task completion status
+        priority: Task priority level
         created_at: Task creation timestamp (UTC)
         updated_at: Last modification timestamp (UTC)
 
@@ -97,6 +109,7 @@ class TaskResponse(BaseModel):
             "title": "Complete Phase II Stage 2",
             "description": "Implement FastAPI REST API",
             "complete": false,
+            "priority": "medium",
             "created_at": "2025-12-20T10:30:00Z",
             "updated_at": "2025-12-20T10:30:00Z"
         }
@@ -107,6 +120,7 @@ class TaskResponse(BaseModel):
     title: str
     description: str | None
     complete: bool
+    priority: TaskPriority
     created_at: datetime
     updated_at: datetime
 
@@ -131,6 +145,7 @@ class TaskListResponse(BaseModel):
                     "title": "Task 1",
                     "description": null,
                     "complete": false,
+                    "priority": "medium",
                     "created_at": "2025-12-20T10:30:00Z",
                     "updated_at": "2025-12-20T10:30:00Z"
                 }

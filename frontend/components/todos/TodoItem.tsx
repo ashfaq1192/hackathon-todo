@@ -8,7 +8,32 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
-import type { Task, TaskPatch } from '@/types/task';
+import type { Task, TaskPatch, TaskPriority } from '@/types/task';
+
+// Helper function to get priority badge styles
+const getPriorityBadge = (priority: TaskPriority) => {
+  const styles = {
+    low: {
+      bg: 'bg-green-100',
+      text: 'text-green-800',
+      icon: '🟢',
+      label: 'Low'
+    },
+    medium: {
+      bg: 'bg-yellow-100',
+      text: 'text-yellow-800',
+      icon: '🟡',
+      label: 'Medium'
+    },
+    high: {
+      bg: 'bg-red-100',
+      text: 'text-red-800',
+      icon: '🔴',
+      label: 'High'
+    }
+  };
+  return styles[priority] || styles.medium;
+};
 
 interface TodoItemProps {
   todo: Task;
@@ -23,6 +48,7 @@ export function TodoItem({ todo, taskNumber, onUpdate, onDelete, isUpdating = fa
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(todo.title);
   const [editDescription, setEditDescription] = useState(todo.description || '');
+  const [editPriority, setEditPriority] = useState<TaskPriority>(todo.priority);
   const [error, setError] = useState<string | null>(null);
   const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
 
@@ -57,6 +83,7 @@ export function TodoItem({ todo, taskNumber, onUpdate, onDelete, isUpdating = fa
       await onUpdate(todo.id, {
         title: editTitle,
         description: editDescription || null,
+        priority: editPriority,
       });
       setIsEditing(false);
     } catch (err) {
@@ -67,6 +94,7 @@ export function TodoItem({ todo, taskNumber, onUpdate, onDelete, isUpdating = fa
   const handleCancelEdit = () => {
     setEditTitle(todo.title);
     setEditDescription(todo.description || '');
+    setEditPriority(todo.priority);
     setIsEditing(false);
     setError(null);
   };
@@ -115,6 +143,16 @@ export function TodoItem({ todo, taskNumber, onUpdate, onDelete, isUpdating = fa
             rows={2}
             disabled={isLoading}
           />
+          <select
+            value={editPriority}
+            onChange={(e) => setEditPriority(e.target.value as TaskPriority)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+            disabled={isLoading}
+          >
+            <option value="low">🟢 Low Priority</option>
+            <option value="medium">🟡 Medium Priority</option>
+            <option value="high">🔴 High Priority</option>
+          </select>
           <div className="flex space-x-2">
             <Button
               variant="primary"
@@ -154,14 +192,23 @@ export function TodoItem({ todo, taskNumber, onUpdate, onDelete, isUpdating = fa
 
             {/* Todo Content */}
             <div className="flex-1 min-w-0">
-              {/* Task Number Badge */}
-              <div className="mb-2">
+              {/* Task Number and Priority Badges */}
+              <div className="mb-2 flex items-center gap-2">
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                   <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
                   </svg>
-                  #{taskNumber}
+                  {taskNumber}
                 </span>
+                {(() => {
+                  const priorityBadge = getPriorityBadge(todo.priority);
+                  return (
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${priorityBadge.bg} ${priorityBadge.text}`}>
+                      <span className="mr-1">{priorityBadge.icon}</span>
+                      {priorityBadge.label}
+                    </span>
+                  );
+                })()}
               </div>
 
               <h3 className={`text-lg font-semibold ${todo.complete ? 'line-through text-gray-500' : 'text-gray-900'}`}>
