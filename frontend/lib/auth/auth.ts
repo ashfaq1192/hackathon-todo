@@ -11,6 +11,7 @@ import { sendVerificationEmail, sendPasswordResetEmail } from "@/lib/email/clien
 
 // PostgreSQL connection pool for Better Auth
 // Reuses the same Neon PostgreSQL database as the backend
+// SSL is required for Neon connections
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
