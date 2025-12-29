@@ -17,13 +17,13 @@ class TaskPriority(str, Enum):
     Priority levels for tasks.
 
     Values:
-        LOW: Low priority task
-        MEDIUM: Medium priority task (default)
-        HIGH: High priority task
+        low: Low priority task
+        medium: Medium priority task (default)
+        high: High priority task
     """
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
+    low = "low"
+    medium = "medium"
+    high = "high"
 
 
 class Task(SQLModel, table=True):
@@ -57,7 +57,7 @@ class Task(SQLModel, table=True):
     complete: bool = Field(default=False)
 
     # Priority level - defaults to medium for new tasks
-    priority: TaskPriority = Field(default=TaskPriority.MEDIUM)
+    priority: TaskPriority = Field(default=TaskPriority.medium)
 
     # Timestamps - auto-generated and auto-updated
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

@@ -31,7 +31,7 @@ class TaskCreate(BaseModel):
 
     title: str = Field(..., min_length=1, max_length=200, description="Task title")
     description: str | None = Field(None, max_length=1000, description="Task description")
-    priority: TaskPriority = Field(default=TaskPriority.MEDIUM, description="Task priority level")
+    priority: TaskPriority = Field(default=TaskPriority.medium, description="Task priority level")
 
 
 class TaskUpdate(BaseModel):
