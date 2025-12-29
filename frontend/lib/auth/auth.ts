@@ -22,7 +22,7 @@ export const auth = betterAuth({
   database: pool,
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true, // Email verification enabled (Resend configured)
+    requireEmailVerification: false, // Temporarily disabled - needs database migration
     sendResetPassword: async ({ user, url }: { user: { email: string }; url: string }) => {
       // Send password reset email using Resend
       await sendPasswordResetEmail(user.email, url);
