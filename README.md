@@ -837,16 +837,6 @@ This project was created for Hackathon II: Spec-Driven Development.
 - **Spec Management**: Spec-Kit Plus
 
 ---
-
-## 📧 Contact & Support
-
-- **GitHub**: [Your GitHub Profile](https://github.com/your-username)
-- **Email**: your.email@example.com
-- **LinkedIn**: [Your LinkedIn](https://linkedin.com/in/your-profile)
-- **Demo Video**: [Watch on YouTube](https://youtube.com/your-demo)
-
----
-
 <div align="center">
 
 **Built with ❤️ using Spec-Driven Development**
