@@ -2,11 +2,6 @@
 
 > **From CLI to Cloud-Native**: A journey through Spec-Driven Development
 
-[![Phase I](https://img.shields.io/badge/Phase%20I-CLI%20App-✓-green)]()
-[![Phase II](https://img.shields.io/badge/Phase%20II-Full--Stack%20Web-✓-green)]()
-[![Backend](https://img.shields.io/badge/Backend-Railway-deployed-blue)](https://your-backend.railway.app)
-[![Frontend](https://img.shields.io/badge/Frontend-Vercel-deployed-blue)](https://your-frontend.vercel.app)
-
 ## 📖 Table of Contents
 
 - [Project Overview](#-project-overview)
